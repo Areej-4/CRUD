@@ -1,4 +1,3 @@
-
 const Navbar = () => {
   return (
 <header className="text-white body-font bg-[#405D72]">
