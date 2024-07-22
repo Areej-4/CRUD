@@ -19,9 +19,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        minlength: [6, 'min length of password must be 6 characters'],
-        maxlength: [12, 'max length of password must be 12 characters']
+        minlength: [6, 'min length of password must be 6 characters']
+        // maxlength: [12, 'max length of password must be 12 characters'] // Remove maxlength constraint
     }
 });
+
 const UserModel = mongoose.model('users', UserSchema);
 module.exports = UserModel;

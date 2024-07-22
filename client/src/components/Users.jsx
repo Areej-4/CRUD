@@ -51,4 +51,3 @@ const Users = () => {
 
 export default Users;
 
-//Handledeleite is a function that is used to delete the user from the database.

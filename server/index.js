@@ -18,24 +18,44 @@ app.get("/", (req, res) => {
 app.get("/getUser/:id", (req, res) => {
     const id = req.params.id;
     UserModel.findById({ _id: id })
-        .then(users => res.json(users))
+        .then(user => res.json(user))
         .catch(err => res.json(err));
 });
 
 app.put("/updateUser/:id", async (req, res) => {
     const id = req.params.id;
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
     
     let updatedFields = { name, email };
-    
-    if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        updatedFields.password = hashedPassword;
-    }
 
     UserModel.findByIdAndUpdate({ _id: id }, updatedFields, { new: true })
         .then(user => res.json(user))
         .catch(err => res.json(err));
+});
+
+app.put("/updatePassword/:id", async (req, res) => {
+    const id = req.params.id;
+    const { oldPassword, newPassword } = req.body;
+
+    try {
+        const user = await UserModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Old password is incorrect" });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (err) {
+        res.status(500).json({ message: "Internal server error", error: err });
+    }
 });
 
 app.delete("/deleteUser/:id", (req, res) => {
@@ -50,9 +70,9 @@ app.post("/createUser", async (req, res) => {
         const { name, email, password } = req.body;
         
         // Check for existing user with the same name or email
-        const existingUser = await UserModel.findOne({ $or: [{ name }, { email }] });
+        const existingUser = await UserModel.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'User with this name or email already exists' });
+            return res.status(400).json({ message: 'User with this email already exists' });
         }
 
         // Hash the password before saving

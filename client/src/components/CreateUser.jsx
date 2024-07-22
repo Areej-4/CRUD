@@ -76,7 +76,7 @@ const CreateUser = () => {
                 {...register("password", {
                   required: "This field is required",
                   minLength: { value: 6, message: "Minimum length is 6" },
-                  maxLength: { value: 12, message: "Maximum length is 12" },
+                  maxLength: { value: 15, message: "Maximum length is 15" },
                   pattern: {
                     value: /^(?=.*[@$!%*#?&])([^@$!%*#?&]*[@$!%*#?&][^@$!%*#?&]*)$/,
                     message: "Password must contain one special character"
