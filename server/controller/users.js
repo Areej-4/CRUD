@@ -14,14 +14,20 @@ export const registerUser = async (req, res) => {
       password: hashpassword
     });
     res.status(200).json({
-      message: "user added",
-      uzer: newuser
+      message: "User added successfully",
+      user: newuser
     });
   } catch (error) {
-    res.status(500).json({
-      message: "server error",
-      error: error
-    });
+    if (error.code === 11000) {
+      res.status(400).json({
+        message: "User with this email already exists"
+      });
+    } else {
+      res.status(500).json({
+        message: "Server error",
+        error: error.message
+      });
+    }
   }
 };
 
@@ -30,31 +36,31 @@ export const loginUser = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
-        message: "please enter email and password"
+        message: "Please enter both email and password"
       });
     }
     const user = await UserModel.findOne({ email: email });
     if (!user) {
       return res.status(400).json({
-        message: "user not found"
+        message: "User not found"
       });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
-        message: "incorrect password"
+        message: "Incorrect password"
       });
     }
     const token = sign({ id: user._id }, 'secretkey', { expiresIn: '1h' });
     res.status(200).json({
-      message: "user logged in",
+      message: "User logged in successfully",
       token: token,
       user: user,
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
-      error: error
+      message: "Server error",
+      error: error.message
     });
   }
 };

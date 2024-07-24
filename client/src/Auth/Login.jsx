@@ -15,6 +15,7 @@ export const  Login =()=> {
       email:data.email,
       password:data.password
     })
+    localStorage.setItem("userEmail", data.email);
      console.log(response)
        navigate('/')
    }
@@ -88,7 +89,7 @@ export const  Login =()=> {
             </div>
           </form>
           <p className="mt-10 text-center text-sm text-gray-500">
-         
+          Not a member?{' '}
           <Link to="/register" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
        Register
           </Link>

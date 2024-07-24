@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
@@ -16,6 +17,7 @@ export const  Register =()=> {
    let response =  await axios.post("http://localhost:3001/register",data)
     console.log(response)
       navigate('/login')
+       toast.info("User Registered successfully")
   }
   return (
     <>
@@ -27,7 +29,7 @@ export const  Register =()=> {
             alt="Your Company"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
+            Register a New account
           </h2>
         </div>
 
