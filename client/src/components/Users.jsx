@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Layout from "./Layout";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -22,7 +23,8 @@ const Users = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mx-4 mt-20 overflow-hidden md:mx-20">
+ <Layout>
+ <div className="flex justify-center items-center mx-4 mt-20 overflow-hidden md:mx-20">
       <table className="w-3/4 table-fixed rounded-lg border-collapse overflow-hidden">
         <thead>
           <tr className="bg-gray-100">
@@ -46,6 +48,7 @@ const Users = () => {
         </tbody>
       </table>
     </div>
+ </Layout>
   );
 };
 
