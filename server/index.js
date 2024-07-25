@@ -5,6 +5,8 @@ import cors from 'cors';
 import userRoute from './routes/userroutes.js';
 import bcrypt from 'bcrypt';
 import UserModel from './models/UserSchema.js';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 dotenv.config();
 
@@ -12,6 +14,15 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use(session({
+  secret: 'This is my secret key',
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/crud' }),
+  cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
+}));
+
 app.use("/", userRoute);
 
 mongoose.connect('mongodb://127.0.0.1:27017/crud', {
@@ -23,20 +34,30 @@ mongoose.connect('mongodb://127.0.0.1:27017/crud', {
   console.error("Database connection error:", error);
 });
 
-app.get("/", (req, res) => {
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) {
+    next();
+  } else {
+    res.status(401).json({
+      message: "Unauthorized"
+    });
+  }
+};
+
+app.get("/", isAuthenticated, (req, res) => {
   UserModel.find({})
     .then(users => res.json(users))
     .catch(err => res.json(err));
 });
 
-app.get("/getUser/:id", (req, res) => {
+app.get("/getUser/:id", isAuthenticated, (req, res) => {
   const id = req.params.id;
   UserModel.findById({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.put("/updateUser/:id", async (req, res) => {
+app.put("/updateUser/:id", isAuthenticated, async (req, res) => {
   const id = req.params.id;
   const { name, email } = req.body;
 
@@ -47,7 +68,7 @@ app.put("/updateUser/:id", async (req, res) => {
     .catch(err => res.json(err));
 });
 
-app.put("/updatePassword/:id", async (req, res) => {
+app.put("/updatePassword/:id", isAuthenticated, async (req, res) => {
   const id = req.params.id;
   const { oldPassword, newPassword } = req.body;
 
@@ -72,14 +93,14 @@ app.put("/updatePassword/:id", async (req, res) => {
   }
 });
 
-app.delete("/deleteUser/:id", (req, res) => {
+app.delete("/deleteUser/:id", isAuthenticated, (req, res) => {
   const id = req.params.id;
   UserModel.findByIdAndDelete({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.post("/createUser", async (req, res) => {
+app.post("/createUser", isAuthenticated, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
