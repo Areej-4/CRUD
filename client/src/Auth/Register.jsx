@@ -1,24 +1,31 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-
-export const  Register =()=> {
-
-    const navigate = useNavigate();
+export const Register = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
-
     formState: { errors },
   } = useForm();
-  const onSubmit = async(data) => {
-   let response =  await axios.post("http://localhost:3001/register",data)
-    console.log(response)
-      navigate('/login')
-       toast.info("User Registered successfully")
-  }
+
+  const onSubmit = async (data) => {
+    try {
+      let response = await axios.post("http://localhost:3001/register", data);
+      console.log(response);
+      navigate('/login');
+      toast.info("User Registered successfully");
+    } catch (err) {
+      if (err.response) {
+        toast.error(err.response.data.message); // Display backend error message
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    }
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -35,21 +42,20 @@ export const  Register =()=> {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div>
-          <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-            Name
-          </label>
-          <div className="mt-2">
-            <input
-              id="name"
-              {...register("name",{required:"this field is required"})}
-              type="name"
-            
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-            {errors.name && <p role="alert" className="text-[#C40C0C]">{errors.name.message}</p>}
-          </div>
-        </div>
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
+                Name
+              </label>
+              <div className="mt-2">
+                <input
+                  id="name"
+                  {...register("name", { required: "This field is required" })}
+                  type="text"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+                {errors.name && <p role="alert" className="text-[#C40C0C]">{errors.name.message}</p>}
+              </div>
+            </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -57,17 +63,18 @@ export const  Register =()=> {
               <div className="mt-2">
                 <input
                   id="email"
-                  {...register("email" ,{required:"this field is required"},{ pattern:{
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "invalid email address"
-                  }  },{required:"this field is required"})}
+                  {...register("email", {
+                    required: "This field is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Invalid email address"
+                    }
+                  })}
                   type="email"
-                 
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
-                
+                {errors.email && <p role="alert" className="text-[#C40C0C]">{errors.email.message}</p>}
               </div>
-              {errors.email && <p role="alert" className="text-[#C40C0C]">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -75,43 +82,42 @@ export const  Register =()=> {
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   Password
                 </label>
-           
               </div>
               <div className="mt-2">
                 <input
                   id="password"
-                  {...register("password" ,{required:"this field is required"}, { pattern:{
-                    value: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/g,
-                    message:"Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-                  }  },{required:"this field is required"})}
+                  {...register("password", {
+                    required: "This field is required",
+                    pattern: {
+                      value: /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/g,
+                      message: "Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+                    }
+                  })}
                   type="password"
-            
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
+                {errors.password && <p role="alert" className="text-[#C40C0C]">{errors.password.message}</p>}
               </div>
-              {errors.password && <p role="alert" className="text-[#C40C0C]">{errors.password.message}</p>}
             </div>
             <div>
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Confirm Password
-              </label>
-           
+              <div className="flex items-center justify-between">
+                <label htmlFor="confirmpassword" className="block text-sm font-medium leading-6 text-gray-900">
+                  Confirm Password
+                </label>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="confirmpassword"
+                  {...register("confirmpassword", {
+                    required: "This field is required",
+                    validate: (value,{password}) => value === password || "Passwords do not match"
+                  })}
+                  type="password"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+                {errors.confirmpassword && <p role="alert" className="text-[#C40C0C]">{errors.confirmpassword.message}</p>}
+              </div>
             </div>
-            <div className="mt-2">
-            <input
-              id="confirmpassword"
-              {...register("confirmpassword", {
-                required: "This is required.",
-                validate: (value, { password }) => value === password || "Passwords do not match"
-              })}
-              type="password"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-            {errors.confirmpassword && <p className="text-red-500">{errors.confirmpassword.message}</p>}
-          </div>
-      
-          </div>
             <div>
               <button
                 type="submit"
@@ -125,12 +131,11 @@ export const  Register =()=> {
           <p className="mt-10 text-center text-sm text-gray-500">
             Already registered?{' '}
             <Link to="/login" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-          Sign In
+              Sign In
             </Link>
           </p>
         </div>
       </div>
     </>
-  )
-}
-
+  );
+};

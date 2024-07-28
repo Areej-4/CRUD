@@ -5,8 +5,8 @@ import cors from 'cors';
 import userRoute from './routes/userroutes.js';
 import bcrypt from 'bcrypt';
 import UserModel from './models/UserSchema.js';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
+// import session from 'express-session';
+// import MongoStore from 'connect-mongo';
 
 dotenv.config();
 
@@ -15,49 +15,54 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use(session({
-  secret: 'This is my secret key',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/crud' }),
-  cookie: { maxAge: 1000 * 60 * 60 } // 1 hour
-}));
-
+// app.use(session({
+//   secret: 'This is my secret key',
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/crud' }),
+//   cookie: { 
+//     maxAge: 1000 * 60 * 60, // 1 hour
+//     httpOnly: true, // Helps prevent XSS attacks
+//     secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
+//     sameSite: 'lax' // Helps with CSRF protection
+//   }
+// }));
 app.use("/", userRoute);
-
-mongoose.connect('mongodb://127.0.0.1:27017/crud', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log("Connected to the database");
-}).catch((error) => {
-  console.error("Database connection error:", error);
-});
-
-const isAuthenticated = (req, res, next) => {
+mongoose.connect('mongodb://127.0.0.1:27017/crud');
+{/*app.get("/session-check", (req, res) => {
   if (req.session.userId) {
-    next();
+    UserModel.findById(req.session.userId)
+      .then(user => res.json({ user }))
+      .catch(err => res.status(500).json({ message: "Failed to retrieve user", error: err.message }));
   } else {
-    res.status(401).json({
-      message: "Unauthorized"
-    });
+    res.status(401).json({ message: "No active session" });
   }
-};
+});*/}
 
-app.get("/", isAuthenticated, (req, res) => {
+// const isAuthenticated = (req, res, next) => {
+//   if (req.session.userId) {
+//     next();
+//   } else {
+//     res.status(401).json({
+//       message: "Unauthorized"
+//     });
+//   }
+// };
+
+app.get("/", (req, res) => {
   UserModel.find({})
     .then(users => res.json(users))
     .catch(err => res.json(err));
 });
 
-app.get("/getUser/:id", isAuthenticated, (req, res) => {
+app.get("/getUser/:id",(req, res) => {
   const id = req.params.id;
   UserModel.findById({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.put("/updateUser/:id", isAuthenticated, async (req, res) => {
+app.put("/updateUser/:id", async (req, res) => {
   const id = req.params.id;
   const { name, email } = req.body;
 
@@ -68,7 +73,7 @@ app.put("/updateUser/:id", isAuthenticated, async (req, res) => {
     .catch(err => res.json(err));
 });
 
-app.put("/updatePassword/:id", isAuthenticated, async (req, res) => {
+app.put("/updatePassword/:id",async (req, res) => {
   const id = req.params.id;
   const { oldPassword, newPassword } = req.body;
 
@@ -93,14 +98,14 @@ app.put("/updatePassword/:id", isAuthenticated, async (req, res) => {
   }
 });
 
-app.delete("/deleteUser/:id", isAuthenticated, (req, res) => {
+app.delete("/deleteUser/:id", (req, res) => {
   const id = req.params.id;
   UserModel.findByIdAndDelete({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.post("/createUser", isAuthenticated, async (req, res) => {
+app.post("/createUser", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 

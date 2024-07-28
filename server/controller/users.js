@@ -1,5 +1,8 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserSchema.js';
+
+const { sign } = jwt;
 
 export const registerUser = async (req, res) => {
   try {
@@ -28,6 +31,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -48,10 +52,10 @@ export const loginUser = async (req, res) => {
         message: "Incorrect password"
       });
     }
-
-    req.session.userId = user._id;
+    const token = sign({ id: user._id }, 'secretkey', { expiresIn: '1h' });
     res.status(200).json({
       message: "User logged in successfully",
+      token: token,
       user: user,
     });
   } catch (error) {
@@ -60,18 +64,4 @@ export const loginUser = async (req, res) => {
       error: error.message
     });
   }
-};
-
-export const logoutUser = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({
-        message: "Failed to log out",
-        error: err
-      });
-    }
-    res.status(200).json({
-      message: "User logged out successfully"
-    });
-  });
 };
