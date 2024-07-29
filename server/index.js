@@ -1,53 +1,42 @@
+
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import userRoute from './routes/userroutes.js';
-import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import UserModel from './models/UserSchema.js';
-// import session from 'express-session';
-// import MongoStore from 'connect-mongo';
 
 dotenv.config();
-
 const app = express();
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
 app.use(express.json());
-
-// app.use(session({
-//   secret: 'This is my secret key',
-//   resave: false,
-//   saveUninitialized: false,
-//   store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/crud' }),
-//   cookie: { 
-//     maxAge: 1000 * 60 * 60, // 1 hour
-//     httpOnly: true, // Helps prevent XSS attacks
-//     secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
-//     sameSite: 'lax' // Helps with CSRF protection
-//   }
-// }));
+app.use(cookieParser());
 app.use("/", userRoute);
-mongoose.connect('mongodb://127.0.0.1:27017/crud');
-{/*app.get("/session-check", (req, res) => {
-  if (req.session.userId) {
-    UserModel.findById(req.session.userId)
-      .then(user => res.json({ user }))
-      .catch(err => res.status(500).json({ message: "Failed to retrieve user", error: err.message }));
-  } else {
-    res.status(401).json({ message: "No active session" });
-  }
-});*/}
 
-// const isAuthenticated = (req, res, next) => {
-//   if (req.session.userId) {
-//     next();
-//   } else {
-//     res.status(401).json({
-//       message: "Unauthorized"
-//     });
-//   }
-// };
+mongoose.connect('mongodb://127.0.0.1:27017/crud');
+
+const authenticateJWT = (req, res, next) => {
+  const token = req.cookies.token;
+  if (token) {
+    jwt.verify(token, process.env.SECRETKEY, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
+};
+
+app.get("/profile", authenticateJWT, (req, res) => {
+  res.json({ email: req.user.email });
+});
+
 
 app.get("/", (req, res) => {
   UserModel.find({})
@@ -98,7 +87,7 @@ app.put("/updatePassword/:id",async (req, res) => {
   }
 });
 
-app.delete("/deleteUser/:id", (req, res) => {
+app.delete("/deleteUser/:id",(req, res) => {
   const id = req.params.id;
   UserModel.findByIdAndDelete({ _id: id })
     .then(user => res.json(user))
@@ -125,3 +114,101 @@ app.post("/createUser", async (req, res) => {
 app.listen(3001, () => {
   console.log("Server is Listening on port 3001");
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// app.use(session({
+//   secret: process.env.SECRETKEY,
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({ mongoUrl: 'mongodb://127.0.0.1:27017/crud' }),
+//   cookie: { 
+//     maxAge: 1000 * 60 * 60, // 1 hour
+//     httpOnly: true, // Helps prevent XSS attacks
+//     // secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
+//     // sameSite: 'lax' // Helps with CSRF protection
+//   }
+// }));
+
+
+
+// app.use(session({
+//   secret: process.env.SECRETKEY, // Use a secret from environment variables
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: { secure: false } // Set secure to true if using HTTPS
+// }));
+
+
+// app.get("/sessioncheck", (req, res) => {
+//   if (req.session.userId) {
+//     UserModel.findById(req.session.userId)
+//       .then(user => res.json({ user }))
+//       .catch(err => res.status(500).json({ message: "Failed to retrieve user", error: err.message }));
+//   } else {
+//     res.status(401).json({ message: "No active session" });
+//   }
+// });
+
+
+
+// const isAuthenticated = (req, res, next) => {
+//   if (req.session.userId) {
+//     next();
+//   } else {
+//     res.status(401).json({
+//       message: "Unauthorized"
+//     });
+//   }
+// };
+
+
+
+

@@ -1,14 +1,27 @@
-
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Signout } from "../Auth/Signout";
 
 const Navbar = () => {
-  const email = localStorage.getItem("userEmail");
-  console.log("Email from localStorage:", email);
-  const Signout = () => {
-    localStorage.removeItem("userEmail"); // Use removeItem instead of clearItem
-    toast.success("User Signout successfully");
-  };
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/profile", { withCredentials: true });
+        setEmail(response.data.email);
+      } catch (err) {
+        console.error('Error fetching email:', err);
+      }
+    };
+    fetchEmail();
+  }, []);
+
+  // const Signout = () => {
+  //   setEmail(''); // Clear the email state
+  //   toast.success("User Signout successfully");
+  // };
 
   return (
     <header className="text-white body-font bg-[#405D72]">
@@ -16,7 +29,7 @@ const Navbar = () => {
         <nav className="flex lg:w-2/5 flex-wrap items-center text-base md:ml-auto">
           <Link to="/" className="mr-5">Users</Link>
           <Link to="/create" className="mr-5">Create</Link>
-       <div>
+          <div>
             {email ? (
               <p>Welcome, {email}</p>
             ) : (
@@ -28,14 +41,8 @@ const Navbar = () => {
           <span className="ml-3 text-2xl text-white">Welcome to Dashboard</span>
         </a>
         <div className="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
-          <Link to="/login">
-            <button 
-              onClick={() => Signout()}
-              className="inline-flex mx-2 items-center bg-[#758694] border-0 py-1 px-3 focus:outline-none hover:bg-[#758694] rounded text-base mt-4 md:mt-0"
-            >
-              Sign Out
-            </button>
-          </Link>
+        <Signout/>
+     
         </div>
       </div>
     </header>
@@ -43,3 +50,16 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+
+
+<Link to="/login">
+            <button 
+              onClick={() => Signout()} 
+              className="inline-flex mx-2 items-center bg-[#758694] border-0 py-1 px-3 focus:outline-none hover:bg-[#758694] rounded text-base mt-4 md:mt-0"
+            >
+              Sign Out
+            </button>
+          </Link>

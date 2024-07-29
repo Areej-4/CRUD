@@ -6,7 +6,6 @@ import { useState } from "react";
 export const Login = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
-  
 
   const {
     register,
@@ -15,14 +14,12 @@ export const Login = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    localStorage.setItem("userEmail", data.email);
-
     try {
       const response = await axios.post("http://localhost:3001/login", {
         email: data.email,
         password: data.password,
-      });
-      console.log(response);
+      }, { withCredentials: true });
+      console.log('Login response:', response);
       navigate('/');
     } catch (err) {
       if (err.response) {

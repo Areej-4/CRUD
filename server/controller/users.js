@@ -1,8 +1,8 @@
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserSchema.js';
 
-const { sign } = jwt;
 
 export const registerUser = async (req, res) => {
   try {
@@ -52,7 +52,9 @@ export const loginUser = async (req, res) => {
         message: "Incorrect password"
       });
     }
-    const token = sign({ id: user._id }, 'secretkey', { expiresIn: '1h' });
+    const token = jwt.sign({ email: user.email }, process.env.SECRETKEY, { expiresIn: '1h' });
+    res.cookie('token', token, { httpOnly: true, secure: false }); // Use secure: true in production
+   
     res.status(200).json({
       message: "User logged in successfully",
       token: token,
@@ -65,3 +67,12 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+
+export const signoutUser = (req, res) => {
+  res.clearCookie('token', { httpOnly: true, secure: false }); // Use secure: true in production
+  res.status(200).json({
+    message: "User signed out successfully"
+  });
+};
+
