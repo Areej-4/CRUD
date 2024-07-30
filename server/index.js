@@ -7,6 +7,7 @@ import cors from 'cors';
 import userRoute from './routes/userroutes.js';
 import jwt from 'jsonwebtoken';
 import UserModel from './models/UserSchema.js';
+import bcrypt from 'bcrypt';
 
 dotenv.config();
 const app = express();
@@ -33,7 +34,11 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-app.get("/profile", authenticateJWT, (req, res) => {
+app.get("/authstatus",authenticateJWT, (req, res) => {
+  res.status(200).json({authenticated: true,user:req.user});
+});
+
+app.get("/profile",authenticateJWT,(req, res) => {
   res.json({ email: req.user.email });
 });
 
@@ -114,8 +119,6 @@ app.post("/createUser", async (req, res) => {
 app.listen(3001, () => {
   console.log("Server is Listening on port 3001");
 });
-
-
 
 
 

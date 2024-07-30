@@ -9,7 +9,7 @@ import { Login } from "./Auth/Login";
 import { Register } from "./Auth/Register";
 import { Signout } from "./Auth/Signout";
 import { useEffect, useState } from "react";
-import { isAuthenticated } from "./Auth/isAuthenticated";
+import { checkAuthStatus } from "./Auth/checkAuthStatus";
 
 const App = () => {
   const [auth, setAuth] = useState(null);
@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authStatus = await isAuthenticated();
+      const authStatus = await checkAuthStatus();
       setAuth(authStatus);
       if (!authStatus && location.pathname !== '/register') {
         navigate('/login');
