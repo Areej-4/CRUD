@@ -18,10 +18,7 @@ const Navbar = () => {
     fetchEmail();
   }, []);
 
-  // const Signout = () => {
-  //   setEmail(''); // Clear the email state
-  //   toast.success("User Signout successfully");
-  // };
+
 
   return (
     <header className="text-white body-font bg-[#405D72]">
@@ -55,11 +52,17 @@ export default Navbar;
 
 
 
-<Link to="/login">
-            <button 
-              onClick={() => Signout()} 
-              className="inline-flex mx-2 items-center bg-[#758694] border-0 py-1 px-3 focus:outline-none hover:bg-[#758694] rounded text-base mt-4 md:mt-0"
-            >
-              Sign Out
-            </button>
-          </Link>
+  // const Signout = () => {
+  //   setEmail(''); // Clear the email state
+  //   toast.success("User Signout successfully");
+  // };
+
+
+// <Link to="/login">
+//             <button 
+//               onClick={() => Signout()} 
+//               className="inline-flex mx-2 items-center bg-[#758694] border-0 py-1 px-3 focus:outline-none hover:bg-[#758694] rounded text-base mt-4 md:mt-0"
+//             >
+//               Sign Out
+//             </button>
+//           </Link>

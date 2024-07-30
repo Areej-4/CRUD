@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from '../models/UserSchema.js';
@@ -30,7 +29,6 @@ export const registerUser = async (req, res) => {
     }
   }
 };
-
 
 export const loginUser = async (req, res) => {
   try {
