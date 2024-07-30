@@ -43,20 +43,20 @@ app.get("/profile",authenticateJWT,(req, res) => {
 });
 
 
-app.get("/", (req, res) => {
+app.get("/",authenticateJWT, (req, res) => {
   UserModel.find({})
     .then(users => res.json(users))
     .catch(err => res.json(err));
 });
 
-app.get("/getUser/:id",(req, res) => {
+app.get("/getUser/:id",authenticateJWT,(req, res) => {
   const id = req.params.id;
   UserModel.findById({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.put("/updateUser/:id", async (req, res) => {
+app.put("/updateUser/:id",authenticateJWT, async (req, res) => {
   const id = req.params.id;
   const { name, email } = req.body;
 
@@ -67,7 +67,7 @@ app.put("/updateUser/:id", async (req, res) => {
     .catch(err => res.json(err));
 });
 
-app.put("/updatePassword/:id",async (req, res) => {
+app.put("/updatePassword/:id",authenticateJWT,async (req, res) => {
   const id = req.params.id;
   const { oldPassword, newPassword } = req.body;
 
@@ -92,14 +92,14 @@ app.put("/updatePassword/:id",async (req, res) => {
   }
 });
 
-app.delete("/deleteUser/:id",(req, res) => {
+app.delete("/deleteUser/:id",authenticateJWT,(req, res) => {
   const id = req.params.id;
   UserModel.findByIdAndDelete({ _id: id })
     .then(user => res.json(user))
     .catch(err => res.json(err));
 });
 
-app.post("/createUser", async (req, res) => {
+app.post("/createUser",authenticateJWT, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
